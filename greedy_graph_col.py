@@ -1,9 +1,7 @@
 import numpy as np
 
 
-def greedy_graph_col(g, k=None):
-    if k is not None and k <= 0:
-        raise Exception('Invalid Input')
+def greedy_graph_col(g):
 
     n = g.shape[0]
     col = [-1] * n
@@ -20,9 +18,5 @@ def greedy_graph_col(g, k=None):
         else:
             col[i] = max_col + 1
             max_col += 1
-            if k is not None:
-                if max_col > k:
-                    return None
-    if k is None:
-        return max_col+1, tuple(col)
-    return k, tuple(col)
+
+    return max_col+1, tuple(col)
