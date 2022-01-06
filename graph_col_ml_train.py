@@ -5,47 +5,11 @@ from torch import optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data import TensorDataset
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-device = "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
-batch_size = 64
-
-# load data
-graphs = np.loadtxt('graphs.txt', dtype='float')
-labels = np.loadtxt('labels.txt', dtype='int') - 1
-
-for i in range(10):
-    rand = np.random.get_state()
-    np.random.shuffle(graphs)
-    np.random.set_state(rand)
-    np.random.shuffle(labels)
-
-sep = len(graphs) - 5000
-data_x = graphs[:sep]
-data_y = labels[:sep]
-test_x = graphs[sep:]
-test_y = labels[sep:]
-
-# seperate to train and validation
-sep = int(0.8 * len(data_x))
-train_x = torch.from_numpy(data_x[:sep]).float().to(device)
-train_y = torch.from_numpy(data_y[:sep]).long().to(device)
-val_x = torch.from_numpy(data_x[sep:]).float().to(device)
-val_y = torch.from_numpy(data_y[sep:]).long().to(device)
-test_x = torch.from_numpy(test_x).float().to(device)
-test_y = torch.from_numpy(test_y).long().to(device)
-
-train_dataset = TensorDataset(train_x, train_y)
-val_dataset = TensorDataset(val_x, val_y)
-test_dataset = TensorDataset(test_x, test_y)
-
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=batch_size)
-
-class Model(nn.Module):
+class MinGraphColModel(nn.Module):
     def __init__(self):
-        super(Model, self).__init__()
+        super(MinGraphColModel, self).__init__()
         self.flatten = nn.Flatten()
         self.fc0 = nn.Linear(45, 100)
         self.bnorm0 = nn.BatchNorm1d(num_features=100)
@@ -59,10 +23,7 @@ class Model(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-model = Model().to(device)
-optimizer = optim.Adam(model.parameters(), lr=0.01)
-
-def train(model):
+def train(model, optimizer, train_loader):
     model.train()
     for batch_idx, (data, labels) in enumerate(train_loader):
         optimizer.zero_grad()
@@ -71,7 +32,7 @@ def train(model):
         loss.backward()
         optimizer.step()
 
-def validate(loader):
+def validate(loader, model):
     model.eval()
     loss = 0
     corr = 0
@@ -87,7 +48,7 @@ def validate(loader):
 
     return float(loss), float(acc)
 
-def test(loader):
+def test(loader, model):
     all_pred = list()
     model.eval()
     with torch.no_grad():
@@ -98,20 +59,60 @@ def test(loader):
                 all_pred.append(int(y_hat))
     return all_pred
 
-best_acc = 0
-torch.save(model.state_dict(), './best_model.pt')
+def dnn():
+    batch_size = 64
 
-for epoch in range(1, 10 + 1):
-    train(model)
-    val_loss, val_acc = validate(val_loader)
-    if val_acc >= best_acc:
-        best_acc = val_acc
-        torch.save(model.state_dict(), './best_model.pt')
-model.load_state_dict(torch.load('./best_model.pt'))
+    # load data
+    graphs = np.loadtxt('ml_data\data\graphs.txt', dtype='float')
+    labels = np.loadtxt('ml_data\data\labels.txt', dtype='int') - 1
 
-pred = test(test_loader)
-corr = 0
-for i in range(len(test_x)):
-  if test_y[i] == pred[i]:
-    corr = corr + 1
-print('accuracy: {:.2f}%'.format(100.0 * (corr / len(test_x))))
+    for i in range(10):
+        rand = np.random.get_state()
+        np.random.shuffle(graphs)
+        np.random.set_state(rand)
+        np.random.shuffle(labels)
+
+    sep = len(graphs) - 5000
+    data_x = graphs[:sep]
+    data_y = labels[:sep]
+    test_x = graphs[sep:]
+    test_y = labels[sep:]
+
+    # seperate to train and validation
+    sep = int(0.8 * len(data_x))
+    train_x = torch.from_numpy(data_x[:sep]).float().to(device)
+    train_y = torch.from_numpy(data_y[:sep]).long().to(device)
+    val_x = torch.from_numpy(data_x[sep:]).float().to(device)
+    val_y = torch.from_numpy(data_y[sep:]).long().to(device)
+    test_x = torch.from_numpy(test_x).float().to(device)
+    test_y = torch.from_numpy(test_y).long().to(device)
+
+    train_dataset = TensorDataset(train_x, train_y)
+    val_dataset = TensorDataset(val_x, val_y)
+    test_dataset = TensorDataset(test_x, test_y)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size)
+
+    new_model = MinGraphColModel().to(device)
+    new_opt = optim.Adam(new_model.parameters(), lr=0.001)
+
+    best_acc = 0
+    torch.save(new_model.state_dict(), './best_model.pt')
+
+    for epoch in range(1, 13 + 1):
+        train(new_model, new_opt, train_loader)
+        val_loss, val_acc = validate(val_loader, new_model)
+        if val_acc >= best_acc:
+            print(f'epoch {epoch}: accuracy = {val_acc}')
+            best_acc = val_acc
+            torch.save(new_model.state_dict(), './best_model.pt')
+    new_model.load_state_dict(torch.load('./best_model.pt'))
+
+    pred = test(test_loader, new_model)
+    corr = 0
+    for i in range(len(test_x)):
+        if test_y[i] == pred[i]:
+            corr = corr + 1
+        print('accuracy: {:.2f}%'.format(100.0 * (corr / len(test_x))))

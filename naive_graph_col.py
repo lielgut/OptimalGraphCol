@@ -1,14 +1,6 @@
 import random
 import numpy as np
 
-def gen_graph(k):
-    r = random.randint(0, 5)
-    g = np.zeros((k,k), dtype=int)
-    for i in range(k):
-        for j in range(i + 1, k):
-            g[i][j] = g[j][i] = 0 if random.randint(0, 6) > r else 1
-    return g
-
 class Graph():
     def __init__(self, g):
         self.n = g.shape[0]

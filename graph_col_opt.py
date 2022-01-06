@@ -6,17 +6,16 @@ from greedy_graph_col import greedy_graph_col
 from random import randint
 from time import time
 import numpy as np
+import random
 
-def gen_graph(k):
-    r = randint(0, 5)
-    # r = 0
+def gen_graph(k, r):
     g = np.zeros((k,k), dtype=int)
     for i in range(k):
         for j in range(i + 1, k):
-            g[i][j] = g[j][i] = 1 if randint(0, 6) > r else 0
+            g[i][j] = g[j][i] = 0 if random.randint(0, 9) > r else 1
     return g
 
-graphs = [gen_graph(10) for i in range(100)]
+graphs = [gen_graph(10, randint(0,9)) for i in range(100)]
 time_naive, time_lin_prog, time_ml, time_greedy = list(), list(), list(), list()
 ml_mis, greedy_mis = 0, 0
 ml_model = get_ml_model()
