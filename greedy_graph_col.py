@@ -5,11 +5,11 @@ def greedy_graph_col(g):
 
     n = g.shape[0]
     col = [-1] * n
-    max_col = 0
-    col[0] = 0
+    max_col = 1
+    col[0] = 1
 
     for i in range(1, n):
-        avail_cols = set(range(0, max_col + 1))
+        avail_cols = set(range(1, max_col + 1))
         for j in range(0, n):
             if g[i][j] == 1:
                 avail_cols.discard(col[j])
@@ -19,4 +19,4 @@ def greedy_graph_col(g):
             col[i] = max_col + 1
             max_col += 1
 
-    return max_col+1, tuple(col)
+    return max_col, tuple(col)

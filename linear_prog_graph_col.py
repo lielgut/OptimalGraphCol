@@ -5,7 +5,7 @@ def linear_prog_min_graph_col(g):
     n = g.shape[0]
     coloring = [-1] * n
     vertices = range(n)
-    colors = range(n)
+    colors = range(1, n+1)
     lp = LpProblem(name='Linear_Programming_Graph_Coloring_Problem', sense=LpMinimize)
     colors_of_vertices = LpVariable.dicts(name='vertex_and_color', indices=(vertices, colors), lowBound=0, upBound=1,
                                        cat=LpInteger)
