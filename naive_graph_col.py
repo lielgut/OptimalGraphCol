@@ -26,10 +26,10 @@ class Graph():
         col = [0] * self.n
         return col if (self.graphColRec(k, col, 0) != None) else None
 
-def min_graph_col_naive(g, min_k = 1):
+def min_graph_col_naive(g):
     graph = Graph(g)
     n = g.shape[0]
-    for k in range(min_k, n):
+    for k in range(1, n):
         col = graph.graphCol(k)
         if col != None:
             return k, col

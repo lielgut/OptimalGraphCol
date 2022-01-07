@@ -10,14 +10,12 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 class MinGraphColModel(nn.Module):
     def __init__(self):
         super(MinGraphColModel, self).__init__()
-        self.flatten = nn.Flatten()
         self.fc0 = nn.Linear(45, 100)
         self.bnorm0 = nn.BatchNorm1d(num_features=100)
         self.fc1 = nn.Linear(100, 50)
         self.bnorm1 = nn.BatchNorm1d(num_features=50)
         self.fc2 = nn.Linear(50, 10)
     def forward(self, x):
-        x = self.flatten(x)
         x = F.relu(self.bnorm0(self.fc0(x)))
         x = F.relu(self.bnorm1(self.fc1(x)))
         x = self.fc2(x)
@@ -104,8 +102,8 @@ def dnn():
     for epoch in range(1, 13 + 1):
         train(new_model, new_opt, train_loader)
         val_loss, val_acc = validate(val_loader, new_model)
+        print(f'epoch {epoch}: accuracy = {int(val_acc)}%')
         if val_acc >= best_acc:
-            print(f'epoch {epoch}: accuracy = {val_acc}')
             best_acc = val_acc
             torch.save(new_model.state_dict(), './best_model.pt')
     new_model.load_state_dict(torch.load('./best_model.pt'))
@@ -115,4 +113,4 @@ def dnn():
     for i in range(len(test_x)):
         if test_y[i] == pred[i]:
             corr = corr + 1
-        print('accuracy: {:.2f}%'.format(100.0 * (corr / len(test_x))))
+    print('accuracy: {:.2f}%'.format(100.0 * (corr / len(test_x))))

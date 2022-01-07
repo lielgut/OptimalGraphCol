@@ -1,0 +1,4 @@
+*.docx
+/.vscode
+/__pycache__
+

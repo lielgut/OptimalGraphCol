@@ -1,7 +1,5 @@
 import numpy as np
 import torch
-from torch import nn
-import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data import TensorDataset
 from graph_col_ml_train import MinGraphColModel
