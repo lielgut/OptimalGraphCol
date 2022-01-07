@@ -24,15 +24,11 @@ ml_model = get_ml_model()
 for g in graphs:
     st = time()
     k_naive, col_naive = min_graph_col_naive(g)
-    print('naive:')
-    print(col_naive)
     end = time()
     time_naive.append(end - st)
 
     st = time()
     k_lp, col_lp = linear_prog_min_graph_col(g)
-    print('lp:')
-    print(col_lp)
     end = time()
     time_lp.append(end - st)
 

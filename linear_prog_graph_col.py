@@ -5,8 +5,7 @@ def linear_prog_min_graph_col(g):
     n = g.shape[0]
     coloring = [-1] * n
     vertices = range(n)
-    # colors = range(1, n+1)
-    colors = range(1, max([int(sum(g[i])) for i in range(0, n)])+1)
+    colors = range(1, max([int(sum(g[i])) for i in range(0, n)])+2)
     lp = LpProblem(name='Linear_Programming_Graph_Coloring_Problem', sense=LpMinimize)
     colors_of_vertices = LpVariable.dicts(name='vertex_and_color', indices=(vertices, colors), cat=LpBinary)
     is_color_used = LpVariable.dicts(name='color', indices=colors, cat=LpBinary)
@@ -34,4 +33,4 @@ def linear_prog_min_graph_col(g):
             if colors_of_vertices[vertex][color].value() == 1:
                 coloring[vertex] = color
 
-    return int(value(lp.objective)), tuple(coloring)
+    return int(value(lp.objective)), coloring
