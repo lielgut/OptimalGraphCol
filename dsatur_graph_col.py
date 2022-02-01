@@ -8,7 +8,7 @@ def dsatur_graph_col(g):
     max_col = 1
 
     for i in range(0, n):
-        uncolored_vertices_and_saturation.sort(key=lambda x: (sum(g[x[0]]), x[1]), reverse=True)
+        uncolored_vertices_and_saturation.sort(key=lambda x: (x[1], sum(g[x[0]])), reverse=True)
         avail_cols = set(range(1, max_col + 1))
         cur_vertex = uncolored_vertices_and_saturation[0][0]
         del uncolored_vertices_and_saturation[0]
