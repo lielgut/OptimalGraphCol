@@ -16,7 +16,7 @@ def gen_graph(k, r):
             g[i][j] = g[j][i] = 0 if random.randint(0, 9) > r else 1
     return g
 
-graphs = [gen_graph(10, r=randint(0,8)) for i in range(100)]
+graphs = [gen_graph(10, r=randint(0,8)) for i in range(1000)]
 time_naive, time_lp, time_ml, time_greedy, time_dsatur = list(), list(), list(), list(), list()
 ml_mis, greedy_mis, dsatur_mis = 0, 0, 0
 ml_model = get_ml_model()
@@ -31,11 +31,6 @@ for g in graphs:
     k_lp, col_lp = linear_prog_min_graph_col(g)
     end = time()
     time_lp.append(end - st)
-
-    if k_lp != k_naive:
-        print("NOOOOOOOOOOOOOOO")
-        print(f'k_lp = {k_lp}, k_naive = {k_naive}')
-        print(g)
 
     st = time()
     k_ml = predict_col_min(g, ml_model)
