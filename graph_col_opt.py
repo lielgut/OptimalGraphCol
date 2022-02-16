@@ -32,11 +32,6 @@ for g in graphs:
     end = time()
     time_lp.append(end - st)
 
-    if k_lp != k_naive:
-        print("NOOOOOOOOOOOOOOO")
-        print(f'k_lp = {k_lp}, k_naive = {k_naive}')
-        print(g)
-
     st = time()
     k_ml = predict_col_min(g, ml_model)
     end = time()
