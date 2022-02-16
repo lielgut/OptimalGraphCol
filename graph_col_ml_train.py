@@ -5,7 +5,6 @@ from torch import optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data import TensorDataset
-device = "cuda" if torch.cuda.is_available() else "cpu"
 
 class MinGraphColModel(nn.Module):
     def __init__(self):
@@ -78,12 +77,12 @@ def dnn():
 
     # seperate to train and validation
     sep = int(0.8 * len(data_x))
-    train_x = torch.from_numpy(data_x[:sep]).float().to(device)
-    train_y = torch.from_numpy(data_y[:sep]).long().to(device)
-    val_x = torch.from_numpy(data_x[sep:]).float().to(device)
-    val_y = torch.from_numpy(data_y[sep:]).long().to(device)
-    test_x = torch.from_numpy(test_x).float().to(device)
-    test_y = torch.from_numpy(test_y).long().to(device)
+    train_x = torch.from_numpy(data_x[:sep]).float()
+    train_y = torch.from_numpy(data_y[:sep]).long()
+    val_x = torch.from_numpy(data_x[sep:]).float()
+    val_y = torch.from_numpy(data_y[sep:]).long()
+    test_x = torch.from_numpy(test_x).float()
+    test_y = torch.from_numpy(test_y).long()
 
     train_dataset = TensorDataset(train_x, train_y)
     val_dataset = TensorDataset(val_x, val_y)
@@ -93,7 +92,7 @@ def dnn():
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
-    new_model = MinGraphColModel().to(device)
+    new_model = MinGraphColModel()
     new_opt = optim.Adam(new_model.parameters(), lr=0.001)
 
     best_acc = 0
